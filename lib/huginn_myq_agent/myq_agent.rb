@@ -22,6 +22,7 @@ module Agents
     form_configurable :action, type: :array, values: ['status', 'open', 'close', 'toggle']
 
     def validate_options
+      errors.add(:base, 'email address is required') unless options['email_address'].present?
     end
 
 
