@@ -3,6 +3,7 @@ require 'ruby_myq'
 module Agents
   class MyqAgent < Agent
     include FormConfigurable
+    cannot_receive_events!
     default_schedule '12h'
 
     description <<-MD
@@ -12,7 +13,9 @@ module Agents
     def default_options
       {
         'email_address' => '',
-        'password' => ''
+        'password' => '',
+        'door_name' => '',
+        'action' => ''
       }
     end
 
@@ -22,22 +25,40 @@ module Agents
     form_configurable :action, type: :array, values: ['status', 'open', 'close', 'toggle']
 
     def validate_options
-      errors.add(:base, 'email address is required') unless options['email_address'].present?
+      if options['email_address'].blank?
+        errors.add(:base, 'email address is required')
+      end
+      if options['password'].blank?
+        errors.add(:base, 'password is required')
+      end
+      if options['door_name'].blank?
+        errors.add(:base, 'door_name is required')
+      end
+      if options['action'].blank?
+        errors.add(:base, 'action is required')
+      end
     end
-
-
-    def 
 
     def working?
       # Implement me! Maybe one of these next two lines would be a good fit?
-      # checked_without_error?
-      # received_event_without_error?
+      received_event_without_error?
     end
 
-    private
+    def check
+      door = select_door(interpolated['door_name'])
+      if interpolated['action'] == 'status'
+        create_event :payload => status(door)
+      elsif interpolated['action'] == 'open'
+        open_door(door)
+        create_event :payload => status(door)
+      elsif interpolated['action'] == 'close'
+        close(door)
+        create_event :payload => status(door)
+      end
+    end
 
     def create_system
-      system = RubyMyq::System.new(:email_address,:password)
+      system = RubyMyq::System.new(interpolated['email_address'],interpolated['password'])
     end
 
     def select_door(door_name)
@@ -45,9 +66,13 @@ module Agents
       door = system.find_door_by_name(door_name)
     end
 
-    def status_since(door_name)
+    def status(door_name)
       door = select_door(door_name)
-      status_since = door.status_since
+      status = {
+        'state' => door.status,
+        'since' => door.status_since
+      }
+      return status
     end
 
     def close_door(door_name)
@@ -70,8 +95,6 @@ module Agents
     end
 
 
-#    def check
-#    end
 
 #    def receive(incoming_events)
 #    end
