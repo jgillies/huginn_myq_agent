@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "huginn_myq_agent"
-  spec.version       = '0.1'
+  spec.version       = '0.0.2'
   spec.authors       = ["Jesse Gillies"]
   spec.email         = ["jessegillies@gmail.com"]
 
@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
 
   spec.add_runtime_dependency "huginn_agent"
-  spec.add_runtime_dependency "ruby_myq"
+  spec.add_runtime_dependency "ruby_myq", "~> 0.0.1"
 end
