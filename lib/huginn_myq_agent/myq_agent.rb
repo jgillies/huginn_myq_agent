@@ -94,7 +94,7 @@ module Agents
 
     def complete_door_name
       system = create_system
-      system.garage_doors.map { |door| door.name }
+      system.garage_doors.map { |door| {id: door.name, text: door.name} }
     end
 
 
