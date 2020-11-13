@@ -14,14 +14,12 @@ module Agents
       {
         'email_address' => '',
         'password' => '',
-        'door_name' => '',
-        'action' => ''
       }
     end
 
-    form_configurable :email_address, type: :text
-    form_configurable :password, type: :text
-    form_configurable :door_name, type: :text
+    form_configurable :email_address
+    form_configurable :password
+    form_configurable :door_name, roles: :completable
     form_configurable :action, type: :array, values: ['status', 'open', 'close', 'toggle']
 
     def validate_options
@@ -47,13 +45,13 @@ module Agents
     def check
       door = select_door(interpolated['door_name'])
       if interpolated['action'] == 'status'
-        create_event :payload => status(door)
+        create_event :payload => status(door.name)
       elsif interpolated['action'] == 'open'
         open_door(door)
-        create_event :payload => status(door)
+        create_event :payload => status(door.name)
       elsif interpolated['action'] == 'close'
         close(door)
-        create_event :payload => status(door)
+        create_event :payload => status(door.name)
       end
     end
 
@@ -92,6 +90,11 @@ module Agents
       elsif door.status == "closed"
         door.open
       end
+    end
+
+    def complete_door_name
+      system = create_system
+      system.garage_doors.map { |door| door.name }
     end
 
 
