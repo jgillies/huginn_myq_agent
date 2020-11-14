@@ -7,7 +7,7 @@ module Agents
     default_schedule '12h'
 
     description <<-MD
-      Add a Agent description here
+      Allows for the control of a Chamberlain MyQ garage door.
     MD
 
     def default_options
@@ -38,8 +38,7 @@ module Agents
     end
 
     def working?
-      # Implement me! Maybe one of these next two lines would be a good fit?
-      received_event_without_error?
+      !recent_error_logs?
     end
 
     def check
@@ -97,9 +96,5 @@ module Agents
       system.garage_doors.map { |door| {id: door.name, text: door.name} }
     end
 
-
-
-#    def receive(incoming_events)
-#    end
   end
 end
