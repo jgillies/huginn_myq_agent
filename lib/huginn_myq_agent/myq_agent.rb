@@ -54,7 +54,10 @@ module Agents
         open_door(door)
         create_event :payload => status(door.name)
       elsif interpolated['action'] == 'close'
-        close(door)
+        close_door(door)
+        create_event :payload => status(door.name)
+      elsif interpolated['action'] == 'toggle'
+        toggle_door(door)
         create_event :payload => status(door.name)
       end
     end
