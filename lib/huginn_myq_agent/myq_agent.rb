@@ -41,6 +41,11 @@ module Agents
       !recent_error_logs?
     end
 
+    def complete_door_name
+      system = create_system
+      system.garage_doors.map { |door| {id: door.name, text: door.name} }
+    end
+
     def check
       door = select_door(interpolated['door_name'])
       if interpolated['action'] == 'status'
@@ -54,6 +59,8 @@ module Agents
       end
     end
 
+    private
+
     def create_system
       system = RubyMyq::System.new(interpolated['email_address'],interpolated['password'])
     end
@@ -63,37 +70,28 @@ module Agents
       door = system.find_door_by_name(door_name)
     end
 
-    def status(door_name)
-      door = select_door(door_name)
+    def status(door)
       status = {
+        'name' => door.name,
         'state' => door.status,
         'since' => door.status_since
       }
-      return status
     end
 
-    def close_door(door_name)
-      door = select_door(door_name)
+    def close_door(door)
       door.close
     end
 
-    def open_door(door_name)
-      door = select_door(door_name)
+    def open_door(door)
       door.open
     end
 
-    def toggle_door(door_name)
-      door = select_door(door_name)
+    def toggle_door(dorr)
       if door.status == "open"
         door.close
       elsif door.status == "closed"
         door.open
       end
-    end
-
-    def complete_door_name
-      system = create_system
-      system.garage_doors.map { |door| {id: door.name, text: door.name} }
     end
 
   end
