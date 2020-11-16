@@ -49,16 +49,16 @@ module Agents
     def check
       door = select_door(interpolated['door_name'])
       if interpolated['action'] == 'status'
-        create_event :payload => status(door.name)
+        create_event :payload => status(door)
       elsif interpolated['action'] == 'open'
         open_door(door)
-        create_event :payload => status(door.name)
+        create_event :payload => status(door)
       elsif interpolated['action'] == 'close'
         close_door(door)
-        create_event :payload => status(door.name)
+        create_event :payload => status(door)
       elsif interpolated['action'] == 'toggle'
         toggle_door(door)
-        create_event :payload => status(door.name)
+        create_event :payload => status(door)
       end
     end
 
@@ -89,7 +89,7 @@ module Agents
       door.open
     end
 
-    def toggle_door(dorr)
+    def toggle_door(door)
       if door.status == "open"
         door.close
       elsif door.status == "closed"
